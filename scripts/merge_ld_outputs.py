@@ -19,14 +19,12 @@ def main():
     header_done = False
 
     infiles = glob(args.inpattern)
-
+    print(infiles)
     # Open output file
     with gzip.open(args.output, 'wt') as out_h:
-
         # Process each input file
         for inf in infiles:
             with gzip.open(inf, 'rt') as in_h:
-
                 # Process header
                 header = in_h.readline()
                 if not header_done:
