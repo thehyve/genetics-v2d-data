@@ -135,16 +135,16 @@ rule weight_studies_to_final:
         '--min_r2 {params.min_r2}'
 
 
-rule calculate_overlaps:
-    input:
-        top_loci='output/{version}/toploci.tsv.gz',
-        ld='output/{version}/ld.tsv.gz',
-        finemap='output/{version}/finemapping.tsv.gz'
-    output:
-        '{output_dir}/{study_id}/locus_overlap.tsv.gz'
-    shell:
-        'python ../scripts/calculate_locus_set_overlaps.py '
-        '--top_loci {input.top_loci} '
-        '--ld {input.ld} '
-        '--finemap {input.finemap} '
-        '--outf {output}'
+# rule calculate_overlaps:
+#     input:
+#         top_loci='output/{version}/toploci.tsv.gz',
+#         ld='output/{version}/ld.tsv.gz',
+#         finemap='output/{version}/finemapping.tsv.gz'
+#     output:
+#         '{output_dir}/{study_id}/locus_overlap.tsv.gz'
+#     shell:
+#         'python ../scripts/calculate_locus_set_overlaps.py '
+#         '--top_loci {input.top_loci} '
+#         '--ld {input.ld} '
+#         '--finemap {input.finemap} '
+#         '--outf {output}'
