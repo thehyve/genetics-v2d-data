@@ -1,0 +1,11 @@
+cores: 8
+
+# IO directories
+study_file: 'input/example_data/gwas_studies.csv'
+output_dir: 'output'
+1000_genomes_plink_data: '/path/to/1000Genomes_phase3/output/plink_format_b37/POPULATION/POPULATION.CHROM.1000Gp3.20130502'
+gwascat_2_superpop: '../configs/gwascat_superpopulation_lut.curated.v2.tsv'
+
+# LD parameters
+ld_window: 500
+min_r2: 0.7
