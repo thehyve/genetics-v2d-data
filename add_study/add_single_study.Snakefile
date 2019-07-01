@@ -19,7 +19,7 @@ rule all:
         expand('{output_dir}/{study_id}/ld/top_loci_variants.ld.gz', study_id=study_df.study_id, output_dir=config['output_dir']),
         expand('{output_dir}/{study_id}/ld/study_weighted.ld.gz', study_id=study_df.study_id, output_dir=config['output_dir']),
         expand('{output_dir}/{study_id}/ld.parquet', study_id=study_df.study_id, output_dir=config['output_dir']),
-        expand('{output_dir}/{study_id}/locus_overlap.tsv.gz', study_id=study_df.study_id, output_dir=config['output_dir'])
+        # expand('{output_dir}/{study_id}/locus_overlap.tsv.gz', study_id=study_df.study_id, output_dir=config['output_dir'])
 
 
 rule get_studies:
