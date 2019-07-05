@@ -19,7 +19,7 @@ rule all:
         expand('{output_dir}/{study_id}/ld/top_loci_variants.ld.gz', study_id=study_df.study_id, output_dir=config['output_dir']),
         expand('{output_dir}/{study_id}/ld/study_weighted.ld.gz', study_id=study_df.study_id, output_dir=config['output_dir']),
         expand('{output_dir}/{study_id}/ld.parquet', study_id=study_df.study_id, output_dir=config['output_dir']),
-        # expand('{output_dir}/{study_id}/locus_overlap.tsv.gz', study_id=study_df.study_id, output_dir=config['output_dir'])
+        expand('{output_dir}/locus_overlap.parquet', study_id=study_df.study_id, output_dir=config['output_dir'])
 
 
 rule get_studies:
@@ -135,16 +135,17 @@ rule weight_studies_to_final:
         '--min_r2 {params.min_r2}'
 
 
-# rule calculate_overlaps:
-#     input:
-#         top_loci='output/{version}/toploci.tsv.gz',
-#         ld='output/{version}/ld.tsv.gz',
-#         finemap='output/{version}/finemapping.tsv.gz'
-#     output:
-#         '{output_dir}/{study_id}/locus_overlap.tsv.gz'
-#     shell:
-#         'python ../scripts/calculate_locus_set_overlaps.py '
-#         '--top_loci {input.top_loci} '
-#         '--ld {input.ld} '
-#         '--finemap {input.finemap} '
-#         '--outf {output}'
+rule calculate_overlaps:
+    input:
+        top_loci=expand('{output_dir}/{study_id}/toploci.parquet', study_id=study_df.study_id, output_dir=config['output_dir']),
+        linkage_disequilibrium=expand('{output_dir}/{study_id}/ld.parquet', study_id=study_df.study_id, output_dir=config['output_dir'])
+    output:
+        '{output_dir}/locus_overlap.parquet'
+    params:
+        locus_overlap=config['locus_overlap_parquet_file'],
+    shell:
+        'python scripts/create_locus_overlap_table.py '
+        '--top_loci {input.top_loci} '
+        '--linkage_disequilibrium {input.linkage_disequilibrium} '
+        '--locus_overlap {params.locus_overlap} '
+        '--output_dir {output} '
