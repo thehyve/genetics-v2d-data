@@ -1,2 +1,2 @@
 study_id,pmid,pub_date,pub_journal,pub_title,pub_author,trait_reported,trait_efos,ancestry_initial,ancestry_replication,n_initial,n_replication,n_cases,trait_category,num_assoc_loci,has_sumstats,study_location
-test1,pmid,11-11-11,nature,test_title,bjorn,disease,efo01,100,200,300,400,600,dis,1200,false,input/example_data/test_grch38.tsv
+test1,pmid,11-11-11,nature,test_title,bjorn,disease,efo01,100,200,300,400,600,dis,1200,false,input/test_grch38.tsv

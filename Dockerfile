@@ -1,14 +1,17 @@
 FROM continuumio/miniconda:4.6.14
 
+# Conda and the envirounment dependencies
 COPY ./environment.yaml /v2d/
 WORKDIR /v2d
 RUN conda env create -n v2d_data --file environment.yaml
-RUN echo "source activate v2d_data" > ~/.bashrc
+# overrule base envirounment set in .bashrc file
+RUN echo "source activate v2d_data" >> ~/.bashrc
 ENV PATH /opt/conda/envs/v2d_data/bin:$PATH
 
-RUN curl https://sdk.cloud.google.com | bash && echo "source /root/google-cloud-sdk/completion.bash.inc; source /root/google-cloud-sdk/path.bash.inc" >> ~/.bashrc
+# Google Cloud SDK
+RUN curl https://sdk.cloud.google.com | bash
 
-# Environment variables
+# Plink
 ENV PLINK_VERSION       1.07
 ENV PLINK_HOME          /usr/local/plink
 ENV PATH                $PLINK_HOME:$PATH
@@ -26,4 +29,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y unzip wget && \
     echo '/usr/local/plink/plink --noweb "$@"'                        >> /usr/local/bin/plink && \
     chmod a+x /usr/local/bin/plink
 
+# Entrypoint
+COPY ./entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD [ "/bin/bash" ]
+
+# Copy the v2d project
 COPY ./ /v2d
