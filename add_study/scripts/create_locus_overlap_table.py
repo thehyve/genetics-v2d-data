@@ -29,7 +29,7 @@ def calculate_overlap(df_ld):
 
     for index, variant in df_ld.iterrows():
         chromosome, pos = variant[['lead_chrom', 'lead_pos']].values
-        tagged_variants = df_ld[df_ld['tag_var_index'] == variant['var_index']]['tag_var_index']
+        tagged_variants = df_ld[df_ld['var_index'] == variant['var_index']]['tag_var_index']
         in_range = df_ld[
             (df_ld['lead_chrom'] == chromosome) &
             (pos - 5000000 < df_ld['lead_pos']) &
@@ -37,7 +37,7 @@ def calculate_overlap(df_ld):
             ]
         if not in_range.empty:
             for overlap_index, overlap_variant in in_range.iterrows():
-                overlap_tagged_variants = df_ld[df_ld['tag_var_index'] == overlap_variant['var_index']]['tag_var_index']
+                overlap_tagged_variants = df_ld[df_ld['var_index'] == overlap_variant['var_index']]['tag_var_index']
                 overlap_df = overlap_df.append(write_overlap_row(
                     variant, overlap_variant, tagged_variants, overlap_tagged_variants), ignore_index=True)
 
@@ -53,10 +53,12 @@ def filter_ld(df_ld, df_tl):
 
 def create_var_index(df, ld=False):
     if ld:
-        df['tag_var_index'] = df['tag_chrom'] + '_' + df['tag_pos'].map(str) + '_' + df['tag_ref'] + '_' + df['tag_alt']
-        df['var_index'] = df['lead_chrom'] + '_' + df['lead_pos'].map(str) + '_' + df['lead_ref'] + '_' + df['lead_alt']
+        df['tag_var_index'] = df['tag_chrom'].map(str) + '_' + df['tag_pos'].map(str) \
+                              + '_' + df['tag_ref'] + '_' + df['tag_alt']
+        df['var_index'] = df['lead_chrom'].map(str) + '_' + df['lead_pos'].map(str) \
+                          + '_' + df['lead_ref'] + '_' + df['lead_alt']
     else:
-        df['var_index'] = df['chrom'] + '_' + df['pos'] + '_' + df['ref'] + '_' + df['alt']
+        df['var_index'] = df['chrom'].map(str) + '_' + df['pos'].map(str) + '_' + df['ref'] + '_' + df['alt']
 
 
 def merge_files(files):
