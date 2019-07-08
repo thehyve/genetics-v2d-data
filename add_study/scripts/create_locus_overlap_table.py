@@ -1,3 +1,5 @@
+import os
+
 import argparse
 import pandas as pd
 
@@ -8,8 +10,8 @@ PARQUET_COLUMNS = [
 ]
 
 
-def write_df_to_parquet(df, args):
-    df.to_parquet(args.output_dir)
+def write_df_to_parquet(df, args, filename):
+    df.to_parquet(os.path.join(args.output_dir, filename))
 
 
 def write_overlap_row(var1, var2, tag1, tag2):
@@ -61,21 +63,28 @@ def create_var_index(df, ld=False):
         df['var_index'] = df['chrom'].map(str) + '_' + df['pos'].map(str) + '_' + df['ref'] + '_' + df['alt']
 
 
-def merge_files(files):
+def merge_files(files, additional_file=False):
     file_list = list()
+
+    if additional_file != 'None':
+        file_list.append(additional_file)
+
     for file in files:
         df = pd.read_parquet(file)
         file_list.append(df)
+
     return pd.concat(file_list, axis=0, ignore_index=True)
 
 
 def load_dataframes(args):
-    df_tl = merge_files(args.top_loci)
-    df_ld = merge_files(args.linkage_disequilibrium)
-    df_lo = None
-    if args.locus_overlap != 'None':
-        df_lo = pd.read_parquet(args.locus_overlap)
-    return df_tl, df_ld, df_lo
+    df_tl = merge_files(args.top_loci, args.top_loci_existing)
+    df_ld = merge_files(args.linkage_disequilibrium, args.linkage_disequilibrium_existing)
+
+    # Write merged dfs to parquet file
+    write_df_to_parquet(df_tl, args, 'toploci.parquet')
+    write_df_to_parquet(df_ld, args, 'ld.parquet')
+
+    return df_tl, df_ld
 
 
 def parse_args():
@@ -85,7 +94,10 @@ def parse_args():
                         help="Location of top loci file(s)", type=str, required=True)
     parser.add_argument('--linkage_disequilibrium', metavar="<parquet file(s)>", nargs='+',
                         help="Location of newly creating top loci parquet file(s)", type=str, required=True)
-    parser.add_argument('--locus_overlap', metavar="<parquet file", help="Location of an existing locus overlap file",
+    parser.add_argument('--top_loci_existing', metavar="<parquet file", default=False,
+                        help="Location of an existing top loci file", type=str, required=False)
+    parser.add_argument('--linkage_disequilibrium_existing', metavar="<parquet file", default=False,
+                        help="Location of an existing linkage disequilibrium file",
                         type=str, required=False)
     parser.add_argument('--output_dir', metavar="<str>", help="Output directory", type=str, required=True)
     args = parser.parse_args()
@@ -94,12 +106,12 @@ def parse_args():
 
 def main():
     args = parse_args()
-    df_tl, df_ld, df_lo = load_dataframes(args)
+    df_tl, df_ld = load_dataframes(args)
     create_var_index(df_tl)
     create_var_index(df_ld, True)
     df_ld = filter_ld(df_ld, df_tl)
     output_df = calculate_overlap(df_ld)
-    write_df_to_parquet(output_df, args)
+    write_df_to_parquet(output_df, args, 'loci_overlap.parquet')
 
 
 if __name__ == '__main__':

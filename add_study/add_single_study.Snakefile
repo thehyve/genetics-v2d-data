@@ -19,7 +19,7 @@ rule all:
         expand('{output_dir}/{study_id}/ld/top_loci_variants.ld.gz', study_id=study_df.study_id, output_dir=config['output_dir']),
         expand('{output_dir}/{study_id}/ld/study_weighted.ld.gz', study_id=study_df.study_id, output_dir=config['output_dir']),
         expand('{output_dir}/{study_id}/ld.parquet', study_id=study_df.study_id, output_dir=config['output_dir']),
-        expand('{output_dir}/locus_overlap.parquet', study_id=study_df.study_id, output_dir=config['output_dir'])
+        expand('{output_dir}/parquet_files/', output_dir=config['output_dir'])
 
 
 rule get_studies:
@@ -138,14 +138,35 @@ rule weight_studies_to_final:
 rule calculate_overlaps:
     input:
         top_loci=expand('{output_dir}/{study_id}/toploci.parquet', study_id=study_df.study_id, output_dir=config['output_dir']),
-        linkage_disequilibrium=expand('{output_dir}/{study_id}/ld.parquet', study_id=study_df.study_id, output_dir=config['output_dir'])
+        linkage_disequilibrium=expand('{output_dir}/{study_id}/ld.parquet', study_id=study_df.study_id, output_dir=config['output_dir']),
+        study=expand('{output_dir}/{study_id}/study.parquet', study_id=study_df.study_id, output_dir=config['output_dir'])
     output:
-        '{output_dir}/locus_overlap.parquet'
+        directory('{output_dir}/parquet_files/')
     params:
-        locus_overlap=config['locus_overlap_parquet_file'],
-    shell:
+        top_loci_existing=config['top_loci_parquet_file'],
+        linkage_disequilibrium_existing=config['linkage_disequilibrium_parquet_file']
+    run:
+        shell(
         'python scripts/create_locus_overlap_table.py '
         '--top_loci {input.top_loci} '
         '--linkage_disequilibrium {input.linkage_disequilibrium} '
-        '--locus_overlap {params.locus_overlap} '
-        '--output_dir {output} '
+        '--top_loci_existing {params.top_loci_existing} '
+        '--linkage_disequilibrium_existing {params.linkage_disequilibrium_existing} '
+        '--output_dir {output}'
+    )
+        shell(
+        'python scripts/merge_studies.py '
+        '--studies {input.study} '
+        '--output_dir {output}'
+    )
+
+
+# rule merge_studies:
+#     input:
+#         expand('{output_dir}/{study_id}/study.parquet', study_id=study_df.study_id, output_dir=config['output_dir']),
+#     output:
+#         directory('{output_dir}/parquet_files/')
+#     params:
+#         'python scripts/merge_studies.py '
+#         '--studies {input} '
+#         '--output_dir {output}'
