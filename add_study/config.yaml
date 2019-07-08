@@ -5,6 +5,7 @@ study_file: 'input/gwas_studies.csv'
 output_dir: 'output'
 1000_genomes_plink_data: '/1000Genomes_phase3/POPULATION/POPULATION.CHROM.1000Gp3.20130502'
 gwascat_2_superpop: '../configs/gwascat_superpopulation_lut.curated.v2.tsv'
+locus_overlap_parquet_file:
 
 # LD parameters
 ld_window: 500
