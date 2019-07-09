@@ -1,0 +1,17 @@
+study_id,test1
+pmid,pmid
+pub_date,11-11-11
+pub_journal,nature
+pub_title,test_title
+pub_author,bjorn
+trait_reported,disease
+trait_efos,efo01
+ancestry_initial,100
+ancestry_replication,200
+n_initial,300
+n_replication,400
+n_cases,600
+trait_category,dis
+num_assoc_loci,1200
+has_sumstats,False
+study_location,input/test_grch37.tsv

@@ -5,10 +5,23 @@ import pandas as pd
 
 
 def write_df_to_parquet(df, args, filename):
+    """
+    Created the parquet file with the pandas to parquet fuction
+    :param df: input dataframe
+    :param args: argparse arguments containing the output dir
+    :param filename: name of the output parquet file
+    :return: None
+    """
     df.to_parquet(os.path.join(args.output_dir, filename))
 
 
 def merge_files(files, additional_file=False):
+    """
+    Merge files into a single dataframe
+    :param files: All files of the same format required for merging
+    :param additional_file: Possibility of adding an extra file to be merged
+    :return: Pandas Datamframe, dataframe with all merged files
+    """
     file_list = list()
 
     if additional_file and additional_file != 'None':
@@ -22,7 +35,10 @@ def merge_files(files, additional_file=False):
 
 
 def parse_args():
-    """ Load command line args """
+    """
+    Load the command line arguments
+    :return: args, argparse line arguments
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('--studies', metavar="<parquet file(s)>", nargs='+',
                         help="Location of the studies", type=str, required=True)

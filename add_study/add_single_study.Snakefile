@@ -48,10 +48,13 @@ rule make_top_loci_table:
         '{output_dir}/{study_id}/study.csv'
     output:
         '{output_dir}/{study_id}/toploci.parquet',
+    params:
+        p_val = config['min_p_val']
     shell:
         'python scripts/create_top_loci_table.py '
         '--study {input} '
         '--output_dir {output} '
+        '--min_p_val {params.p_val}'
 
 
 rule make_ld_input_queries:
@@ -159,14 +162,3 @@ rule calculate_overlaps:
         '--studies {input.study} '
         '--output_dir {output}'
     )
-
-
-# rule merge_studies:
-#     input:
-#         expand('{output_dir}/{study_id}/study.parquet', study_id=study_df.study_id, output_dir=config['output_dir']),
-#     output:
-#         directory('{output_dir}/parquet_files/')
-#     params:
-#         'python scripts/merge_studies.py '
-#         '--studies {input} '
-#         '--output_dir {output}'

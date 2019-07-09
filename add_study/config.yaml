@@ -3,11 +3,14 @@ cores: 8
 # IO directories
 study_file: 'input/gwas_studies.csv'
 output_dir: 'output'
-1000_genomes_plink_data: '/1000Genomes_phase3/POPULATION/POPULATION.CHROM.1000Gp3.20130502'
+1000_genomes_plink_data: '/path/to/1000Genomes_phase3/POPULATION/POPULATION.CHROM.1000Gp3.20130502'
 gwascat_2_superpop: '../configs/gwascat_superpopulation_lut.curated.v2.tsv'
 top_loci_parquet_file:
 linkage_disequilibrium_parquet_file:
 
-# LD parameters
+# Linkage Disequilibrium parameters
 ld_window: 500
 min_r2: 0.7
+
+# Top Loci parameters
+min_p_val: 0.00001 # (1e-5 as default)

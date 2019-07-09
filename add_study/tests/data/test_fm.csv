@@ -1,0 +1,4 @@
+study_id,lead_chrom,lead_pos,lead_ref,lead_alt,tag_chrom,tag_pos,tag_ref,tag_alt,log10_ABF,posterior_prob
+test1,1,10000000,A,T,1,10000009,C,T,6,0.97
+test2,1,10000000,A,T,1,10000009,C,T,6,0.97
+test3,1,10000000,A,T,1,10000009,C,T,6,0.97
