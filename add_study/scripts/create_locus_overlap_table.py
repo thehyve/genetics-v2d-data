@@ -124,7 +124,7 @@ def merge_files(files, additional_file=False):
     """
     file_list = list()
 
-    if additional_file or additional_file != 'None':
+    if additional_file and additional_file != 'None':
         file_list.append(additional_file)
 
     for file in files:

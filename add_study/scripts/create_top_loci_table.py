@@ -25,7 +25,7 @@ def make_var_file(df, args):
     """
     output_dir = os.path.dirname(args.output_dir)
     output_file = os.path.join(output_dir, 'variant_list.txt')
-    df['var_id'] = df['chrom'].str.cat([df['pos'], df['ref'], df['alt']], sep=":")
+    df['var_id'] = df['chrom'].map(str).str.cat([df['pos'].map(str), df['ref'], df['alt']], sep=":")
     df.to_csv(output_file, columns=['var_id'], header=False, index=False)
 
 
