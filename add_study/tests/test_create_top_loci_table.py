@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 from add_study.scripts.create_study_table import *
 
 
-class TestStudy(unittest.TestCase):
+class TestTopLoci(unittest.TestCase):
     """
       Unit test for the creation of the top loci Table
     """

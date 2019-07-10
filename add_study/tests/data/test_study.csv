@@ -6,8 +6,8 @@ pub_title,test_title
 pub_author,bjorn
 trait_reported,disease
 trait_efos,efo01
-ancestry_initial,100
-ancestry_replication,200
+ancestry_initial,EUR=200;AFR=300
+ancestry_replication,EUR=500;AFR=400
 n_initial,300
 n_replication,400
 n_cases,600

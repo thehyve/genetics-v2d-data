@@ -4,8 +4,7 @@ import pandas as pd
 # key: pandas datatype, value: column name
 TYPES = {
     'str': ['study_id', 'pmid', 'pub_date', 'pub_journal',
-            'pub_title', 'pub_author', 'trait_reported', 'ancestry_initial',
-            'ancestry_replication', 'trait_category'
+            'pub_title', 'pub_author', 'trait_reported', 'trait_category'
             ],
     'int64': [
             'n_initial', 'n_replication', 'n_cases', 'num_assoc_loci'
@@ -46,8 +45,10 @@ def make_dataframe(args):
     df = pd.read_csv(args.study, index_col=0).drop(['study_location']).transpose()
 
     df['study_id'] = df.index
-    df.iloc[0]['ancestry_initial'] = [df.iloc[0]['ancestry_initial']]
-    df.iloc[0]['ancestry_replication'] = [df.iloc[0]['ancestry_replication']]
+
+    list_columns = ['trait_efos', 'ancestry_initial', 'ancestry_replication']
+    for column in list_columns:
+        df[column] = df[column].apply(lambda x: x.split(';'))
 
     return df
 
