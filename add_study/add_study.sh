@@ -8,13 +8,12 @@ if [ $# -ne 3 ]; then
     exit 1
 fi
 
-curr_d="$(pwd)"
-v2d_d="$(cd .. && pwd)"
+script_d=$(cd $(dirname "$0") && pwd)
+v2d_d="$(cd "$script_d/.." && pwd)"
 _1000g_d="$(cd $1 && pwd)"
 in_d="$(cd $2 && pwd)"
 mkdir -p $3 
 out_d="$(cd $3 && pwd)"
-cd "$curr_d"
 
 docker build "$v2d_d" --tag v2d
 
