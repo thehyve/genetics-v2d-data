@@ -1,7 +1,7 @@
 Variant-disease tables
 ======================
 
-This repositroy contains scripts to produce variant-to-disease (V2D) association tables for Open Targets Genetics.
+This repository contains scripts to produce variant-to-disease (V2D) association tables for Open Targets Genetics.
 
 Changes made (Jan 2019):
 - All outputs in Apache Parquet format
@@ -36,17 +36,82 @@ conda env create -n v2d_data --file environment.yaml
 conda activate v2d_data
 cores=15
 export PYSPARK_SUBMIT_ARGS="--driver-memory 50g pyspark-shell"
+```
 
-# Alter configuration file
-nano config.yaml
+#### 1. Alter configuration file
 
-# Execute workflows
-version_date=`date +%y%m%d`
-snakemake -s 1_make_tables.Snakefile --config version=$version_date --cores 1
-snakemake -s 2_calculate_LD_table.Snakefile --config version=$version_date --cores $cores
-snakemake -s 3_make_overlap_table.Snakefile --config version=$version_date --cores $cores
+```
+    nano config.yaml
+```
 
-# Upload output dir to google cloud storage
+#### 2. Authenticate with Google Cloud
+
+##### a. Interactive login
+
+You can login with a google user through a web browser. To initiate such login call:
+
+```
+    gcloud auth application-default login
+```
+
+##### b. Authenticate with private key
+
+Alternatively, you can use a service account.
+
+First, you have to create a service account with the Google web console or with [CLI](https://cloud.google.com/iam/docs/creating-managing-service-accounts). Make sure you gave just enough permissions for the service account.
+
+Generate a private key file:
+```
+    gcloud iam service-accounts keys create keys.json --iam-account=<service-account-name>@<project-name>.iam.gserviceaccount.com
+```
+
+You can use the key file with Google CLI commands by specifying `GOOGLE_APPLICATION_CREDENTIALS` environment variable that points to the private key.
+
+```
+    export GOOGLE_APPLICATION_CREDENTIALS=/path/to/keys.json
+```
+
+#### 3. Activate conda environment
+
+##### a. On your machine
+
+**NOTE:** If you use your local environment you need to install Conda and Google Cloud SDK.
+
+```sh
+    # Install dependencies into isolated environment
+    conda env create -n v2d_data --file environment.yaml
+    source activate v2d_data
+```
+
+#### 4. Execute workflows
+
+##### a. Start Docker container (if applicable)
+
+Build image and tag it with a name for convenience of calling later:
+
+```
+    docker build --tag otg-v2d .
+```
+
+Start a docker container in interactive mode.
+
+```
+    docker run --rm -it \
+        -v /path/to/keys.json:/keys.json \
+        -v /path/to/config.yaml:/v2d/config.yaml \
+        -e GOOGLE_APPLICATION_CREDENTIALS="/keys.json" \
+        otg-v2d
+```
+
+##### b. Run workflow
+
+```sh
+    ./run.sh
+```
+
+#### 5. Upload output dir to google cloud storage
+
+```
 gsutil -m rsync -r output/$version_date gs://genetics-portal-staging/v2d/$version_date
 ```
 
@@ -345,6 +410,6 @@ Table showing the number of overlapping tag variants for each (study_id, index_v
 
 
 ##### Effect directions to check in release
-- GCST006612 1_55505647_G_T effect allele=T -0.325
-- GCST002898 1_55505647_G_T effect allele=T -0.53
-- GCST005194_1 1_55505647_G_T effect allele=T -0.282
+- GCST006612 1_55505647_G_T rs11591147 effect allele=T -0.325
+- GCST002898 1_55505647_G_T rs11591147 effect allele=T -0.53
+- GCST005194_1 1_55505647_G_T rs11591147 effect allele=T -0.282
