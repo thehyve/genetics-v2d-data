@@ -16,6 +16,7 @@ dependencies:
   - crcmod
   - pip
   - psutil
+  - java-jdk=8
   - pip:
     - pronto
     - psutil
