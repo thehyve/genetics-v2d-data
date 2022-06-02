@@ -11,7 +11,7 @@ RUN useradd -m -u $UID -g $GID -o -s /bin/bash otg
 # Do everything that requires root user
 # install dependencies
 RUN apt-get update && \
-    apt-get install -y curl unzip wget bzip2 && \
+    apt-get install -y curl unzip wget bzip2 libgoogle-glog-dev && \
     apt-get clean
 
 # install micromamba
