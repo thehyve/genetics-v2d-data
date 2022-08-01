@@ -2,23 +2,21 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Create non-root user 
-ARG UID
-ARG GID
-RUN groupadd -g $GID -o otg
-RUN useradd -m -u $UID -g $GID -o -s /bin/bash otg
-
 # Do everything that requires root user
 # install dependencies
 RUN apt-get update && \
-    apt-get install -y curl unzip wget bzip2 libgoogle-glog-dev && \
+    apt-get install -y curl unzip wget bzip2 libgoogle-glog-dev sudo && \
     apt-get clean
+
+# Create non-root user and allow it to run `sudo chown ...` without password
+RUN useradd -m -r otg && \
+    echo "otg ALL = NOPASSWD: /usr/bin/chown" >> /etc/sudoers
 
 # install micromamba
 RUN mkdir -p /software/micromamba && \
     cd /software/micromamba && \
     wget -qO- https://micromamba.snakepit.net/api/micromamba/linux-64/0.15.2 | tar -xvj bin/micromamba && \
-    chown -R otg:otg /software
+    chown -R otg /software
 ENV PATH="/software/micromamba/bin:${PATH}"
 
 # switch to otg user
@@ -37,9 +35,7 @@ ENV JAVA_HOME='/software/micromamba'
 
 # copy all files of the repo and change owner
 COPY ./ /v2d
-USER root
-RUN chown -R otg:otg /v2d
-USER otg
+RUN sudo chown -R otg /v2d
 
 # set default directory
 WORKDIR /v2d
