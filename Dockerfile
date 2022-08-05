@@ -2,31 +2,25 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Create non-root user 
-ARG UID
-ARG GID
-RUN groupadd -g $GID -o otg
-RUN useradd -m -u $UID -g $GID -o -s /bin/bash otg
-
-# Do everything that requires root user
 # install dependencies
+# TODO: is `update-ca-certificates` really necessary?
 RUN apt-get update && \
-    apt-get install -y curl unzip wget bzip2 libgoogle-glog-dev && \
-    apt-get clean
+    apt-get install --no-install-recommends --yes ca-certificates-java curl \
+      unzip wget bzip2 libgoogle-glog-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    update-ca-certificates -f
 
 # install micromamba
 RUN mkdir -p /software/micromamba && \
     cd /software/micromamba && \
-    wget -qO- https://micromamba.snakepit.net/api/micromamba/linux-64/0.15.2 | tar -xvj bin/micromamba && \
-    chown -R otg:otg /software
+    wget -qO- https://micromamba.snakepit.net/api/micromamba/linux-64/0.15.2 | tar -xvj bin/micromamba
 ENV PATH="/software/micromamba/bin:${PATH}"
 
-# switch to otg user
-USER otg
-
 # create conda/mamba environment
-COPY ./environment.yaml /home/otg
-RUN micromamba install --name base --file /home/otg/environment.yaml --root-prefix /software/micromamba --yes
+COPY ./environment.yaml /
+RUN micromamba install --name base --file /environment.yaml --root-prefix /software/micromamba --yes && \
+    rm -rf /software/micromamba/pkgs
 
 # set JAVA_HOME (useful for Docker commandline)
 ENV JAVA_HOME='/software/micromamba'
@@ -37,9 +31,6 @@ ENV JAVA_HOME='/software/micromamba'
 
 # copy all files of the repo and change owner
 COPY ./ /v2d
-USER root
-RUN chown -R otg:otg /v2d
-USER otg
 
 # set default directory
 WORKDIR /v2d
