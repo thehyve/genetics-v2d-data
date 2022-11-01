@@ -2,7 +2,7 @@ name: Docker
 
 on:
   push:
-    branches: [ "v22.02.01/docker" ]
+    branches: [ "v22.10/docker" ]
 
 env:
   REGISTRY: ghcr.io
